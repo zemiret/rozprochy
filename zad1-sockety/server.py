@@ -8,9 +8,10 @@ import socket
 import threading
 from concurrent import futures
 import signal
+import sys
 
 import config
-import sys
+import message
 
 
 class TCPServer:
@@ -29,9 +30,10 @@ class TCPServer:
 
     def _handle_client(self, saved_conn):
         conn, addr = saved_conn['conn'], saved_conn['addr']
+        nick = addr
 
         while True:
-            data = conn.recv(config.BUF_SIZE)
+            data = str(conn.recv(config.BUF_SIZE))
             if not data:
                 # client disconnected
                 print('Client {} disconnected'.format(addr))
@@ -40,12 +42,15 @@ class TCPServer:
                 self.conlock.release()
                 return
 
-            self.conlock.acquire()
-            for c in self.connections:
-                if c['addr'] != addr:
-                    c['conn'].sendall('{}: {}'.format(addr, str(data)).encode('utf-8'))
+            if message.check(message.CHANGE_NICK, data):
+                nick = message.extract(data)
+            else:
+                self.conlock.acquire()
+                for c in self.connections:
+                    if c['addr'] != addr:
+                        c['conn'].sendall('{}: {}'.format(nick, str(data)).encode('utf-8'))
 
-            self.conlock.release()
+                self.conlock.release()
 
         # self.connections.remove(saved_conn)
 
@@ -76,10 +81,13 @@ class TCPServer:
             print('killing: ', c['addr'])
             c['conn'].shutdown(socket.SHUT_RDWR)
             c['conn'].close()
+        self.connections = []
         self.conlock.release()
 
         self.serv_socket.shutdown(socket.SHUT_RDWR)
         self.serv_socket.close()
+
+        print('Closed connections')
 
 
 if __name__ == "__main__":

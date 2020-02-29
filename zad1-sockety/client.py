@@ -7,6 +7,7 @@ import os
 
 import config
 import sys
+import message
 
 
 class ReceiveHandler(threading.Thread):
@@ -36,6 +37,9 @@ if __name__ == '__main__':
 
     recHandler = ReceiveHandler(sock, daemon=True)
     recHandler.start()
+
+    nickname = input('Nickname: ')
+    sock.sendall(message.create(message.CHANGE_NICK, nickname))
 
     while True:
         try:
