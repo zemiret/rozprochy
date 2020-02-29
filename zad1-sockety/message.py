@@ -1,4 +1,5 @@
 CHANGE_NICK = '!changenick'
+IGNORE = '!ignore'
 
 
 def create(mtype, content):
@@ -10,4 +11,4 @@ def check(mtype, msg):
 
 
 def extract(msg):
-    return msg.split(':')[1]
+    return ':'.join(msg.split(':')[1:])
