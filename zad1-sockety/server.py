@@ -1,31 +1,25 @@
-# Each client - separate thread
-# "Broadcast" to clients (keep clients in some iterable structre)
-# TCP connection
-# UDP connection
-# Multicast
-
 import socket
 import threading
+import uuid
+import os
 from concurrent import futures
-import signal
-import sys
 
 import config
 import message
 
 
-class Server:
-    def __init__(self, ip, port):
+class TCPServer(threading.Thread):
+
+    def __init__(self, ip, port, group=None, target=None, name=None,
+                 args=(), kwargs=None, daemon=None):
+        super().__init__(group, target, name, args, kwargs, daemon=daemon)
+
         self.ip = ip
         self.port = port
         self.tcp_serv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.tcp_serv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.tcp_serv_socket.bind(('', self.port))
         self.tcp_serv_socket.listen()
-
-        self.udp_serv_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udp_serv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.udp_serv_socket.bind(('', self.port))
 
         self.connections = []  # Seems like python lists are thread-safe unless back-referenced
         self.conlock = threading.Lock()
@@ -41,71 +35,53 @@ class Server:
             data = conn.recv(config.BUF_SIZE)
             if not data:
                 # client disconnected
-                print('Client {} disconnected'.format(addr))
+                print('TCP: Client {} disconnected'.format(addr))
                 self.conlock.acquire()
                 self.connections.remove(saved_conn)
                 self.conlock.release()
                 return
 
-            data = str(data)
+            data = str(data, 'utf-8')
 
             if message.check(message.CHANGE_NICK, data):
                 nick = message.extract(data)
             else:
                 self.conlock.acquire()
+
+                msg = '{}: {}'.format(nick, data).encode('utf-8')
                 for c in self.connections:
                     if c['addr'] != addr:
-                        c['conn'].sendall('{}: {}'.format(nick, data).encode('utf-8'))
-
+                        c['conn'].sendall(msg)
                 self.conlock.release()
 
-    def _handle_client_udp(self, saved_conn):
-        ip = saved_conn['addr'][0]
-        addr = (ip, config.PORT)
-        nick = saved_conn['addr']
-
-        while not self.stop:
-            data = str(self.udp_serv_socket.recv(config.BUF_SIZE))
-            print('UDP Received ', data)
-
-            if message.check(message.CHANGE_NICK, data):
-                nick = message.extract(data)
-            else:
-                self.conlock.acquire()
-                for c in self.connections:
-                    to_addr = (c['addr'][0], config.PORT)
-                    print('UDP addr: ', addr)
-                    if addr != to_addr:
-                        print('UDP send to: ', to_addr)
-                        self.udp_serv_socket.sendto('{}: {}'.format(nick, data).encode('utf-8'), to_addr)
-
-                self.conlock.release()
-
-    def serve(self):
+    def run(self):
         with futures.ThreadPoolExecutor() as self.executor:
             while True:
-                conn, addr = self.tcp_serv_socket.accept()
-                saved_conn = {
-                    'conn': conn,
-                    'addr': addr,
-                }
-                print('Connecting: ', addr)
+                try:
+                    conn, addr = self.tcp_serv_socket.accept()
+                    saved_conn = {
+                        'conn': conn,
+                        'addr': addr,
+                    }
+                    print('TCP: Connecting ', addr)
 
-                self.conlock.acquire()
-                self.connections.append(saved_conn)
-                self.conlock.release()
+                    self.conlock.acquire()
+                    self.connections.append(saved_conn)
+                    self.conlock.release()
 
-                self.executor.submit(self._handle_client_tcp, saved_conn)
-                self.executor.submit(self._handle_client_udp, saved_conn)
+                    self.executor.submit(self._handle_client_tcp, saved_conn)
+                except OSError:
+                    # can happen when we killed the thread, and sock is closing
+                    break
 
     def shutdown(self):
-        self.stop = True
+        # self.stop = True
         if self.executor is not None:
             self.executor.shutdown(wait=False)
 
         self.conlock.acquire()
         for c in self.connections:
-            print('killing: ', c['addr'])
+            print('TCP: killing ', c['addr'])
             c['conn'].shutdown(socket.SHUT_RDWR)
             c['conn'].close()
         self.connections = []
@@ -114,29 +90,79 @@ class Server:
         self.tcp_serv_socket.shutdown(socket.SHUT_RDWR)
         self.tcp_serv_socket.close()
 
-        if self.executor is not None:
-            self.executor._threads.clear()
+        print('TCP: Closed connections')
 
-        try:
-            self.udp_serv_socket.shutdown(socket.SHUT_RDWR)
-        except OSError:
-            pass
-        try:
-            self.udp_serv_socket.close()
-        except OSError:
-            pass
 
-        print('Closed connections')
+class UDPServer(threading.Thread):
+
+    def __init__(self, ip, port, group=None, target=None, name=None,
+                 args=(), kwargs=None, daemon=None):
+        super().__init__(group, target, name, args, kwargs, daemon=daemon)
+
+        self.ip = ip
+        self.port = port
+
+        self.udp_serv_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udp_serv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.udp_serv_socket.bind(('', self.port))
+
+        self.connections = {}
+        self.conlock = threading.Lock()
+        self.magic = str.encode(str(uuid.uuid4()))
+
+    def run(self):
+        while True:
+            msg, addr = self.udp_serv_socket.recvfrom(config.UDP_BUF_SIZE)
+            if msg == self.magic:
+                break
+
+            msg = str(msg, 'utf-8')
+
+            if message.check(message.CHANGE_NICK, msg):
+                print('UDP: changenick ', addr)
+                nick = message.extract(msg)
+
+                self.conlock.acquire()
+                self.connections[addr] = nick
+                self.conlock.release()
+            else:
+                self.conlock.acquire()
+                nick = self.connections[addr]
+                for toaddr, _ in self.connections.items():
+                    if addr != toaddr:
+                        self.udp_serv_socket.sendto('{}:'.format(nick).encode('utf-8'), toaddr)
+                        self.udp_serv_socket.sendto(msg.encode('utf-8'), toaddr)
+
+                self.conlock.release()
+
+    def shutdown(self):
+        self.conlock.acquire()
+        self.connections = {}
+        self.conlock.release()
+
+        self.udp_serv_socket.sendto(self.magic, (self.ip, self.port))
+        self.udp_serv_socket.close()
+        print('UDP: Closed connections')
 
 
 if __name__ == "__main__":
-    server = Server('', config.PORT)
+    tcpServer = TCPServer('', config.PORT, daemon=True)
+    udpServer = UDPServer('', config.PORT, daemon=True)
 
-    def handler(_=None, __=None):
-        print('Shutting down...')
-        server.shutdown()
-        sys.exit(0)
+    print('Starting servers')
+    tcpServer.start()
+    udpServer.start()
 
-    print('Starting server')
-    signal.signal(signal.SIGINT, handler)
-    server.serve()
+    while True:
+        try:
+            user_in = input('')
+        except KeyboardInterrupt:
+            print('Shutting down...')
+            udpServer.shutdown()
+            # udpServer.join()
+
+            tcpServer.shutdown()
+            os._exit(0)
+            # sys.exit(0)
+            # tcpServer.join()
+

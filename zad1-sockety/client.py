@@ -20,7 +20,8 @@ class TcpRecHandler(threading.Thread):
                 print('Server died. Quitting...')
                 os._exit(1)
 
-            print(str(data))
+            data = str(data, 'utf-8')
+            print(data)
 
 
 class UdpResHandler(threading.Thread):
@@ -31,7 +32,7 @@ class UdpResHandler(threading.Thread):
 
     def run(self) -> None:
         while True:
-            data = str(self.socket.recv(config.BUF_SIZE))
+            data = str(self.socket.recv(config.BUF_SIZE), 'utf-8')
             print(data)
 
 
