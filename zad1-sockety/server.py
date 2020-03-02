@@ -75,7 +75,6 @@ class TCPServer(threading.Thread):
                     break
 
     def shutdown(self):
-        # self.stop = True
         if self.executor is not None:
             self.executor.shutdown(wait=False)
 
@@ -159,10 +158,7 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             print('Shutting down...')
             udpServer.shutdown()
-            # udpServer.join()
 
             tcpServer.shutdown()
             os._exit(0)
-            # sys.exit(0)
-            # tcpServer.join()
 

@@ -70,7 +70,6 @@ def create_multicast_server_socket():
 
 
 def create_multicast_client_socket(ip, port):
-    # Hmm. This must be only bind once
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((ip, port))
