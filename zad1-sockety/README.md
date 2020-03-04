@@ -1,3 +1,7 @@
+Oświadczam, iż zadanie wykonałem samodzielnie.
+Antoni Mleczko
+
+
 # Server
 
 ```
