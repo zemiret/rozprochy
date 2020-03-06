@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<style>
+p, h1, h2 {
+    display: block;
+    margin: 12px, 0, 12px, 0
+}
+
+body {
+    padding: 24px;
+}
+</style>
+
+<nav>
+    <h1>Some things to make you feel better and afraid at the same time</h1>
+</nav>
+
+<h2>Let's talk about race</h2>
+<p>Hello {{ g.fullname }}</p>
+<p>You are: {{ g.gender }} with {{ g.gender_prob }}% probability</p> 
+<p>Also, I guess you are: {{ g.ethnicity}} with {{ g.ethnicity_prob }}% probability</p> 
+
+<h2>Now, a few jokes about you. Heh...</h2>
+
+{% for joke in g.jokes %}
+<p>{{ joke | safe }}</p>
+{% endfor %}
+
+<h2>But always remember about wise words:</h2>
+<p>{{ g.wise_words }}</p>
+<p>{{ g.wise_author }}</p>
+
+
+<h2>An image, to make you feel more awww</h2>
+<img src="{{ url_for('static', filename='cat.jpg') }}"></img>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+input {
+    display: block;
+    font-size:11px;
+    padding:4px 2px;
+    border:solid 1px #aacfe4;
+    width:150px;
+    margin:2px 0 20px 10px;
+}
+</style>
+
+<nav>
+  <h1>Show me your secrets!</h1>
+</nav>
+
+<form action="/api/" method="POST">
+
+    <label>Name: </label>
+    <input type="text" name="name" required></input>
+
+
+    <label>Surname: </label>
+    <input type="text" name="surname" required></input>
+
+    <label>How big should your kitten image be? <br></label>
+    <label>Width: </label>
+    <input type="number" name="width" required></input>
+    
+    <label>Height: </label>
+    <input type="number" name="height" required></input>
+
+
+    <button type="submit">
+        Gimme some heavy stuff!
+    </button>
+</form>
+
+
+{% endblock %}
