@@ -1,7 +1,6 @@
 package cosmic;
 
 import com.rabbitmq.client.*;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import infra.Constants;
 import infra.Job;
 import infra.JobAck;
@@ -10,8 +9,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
-public class Provider {
+public class Provider extends Communicator {
     private String name;
+    private String adminQueue;
     private String capability1;
     private String capability2;
 
@@ -23,27 +23,35 @@ public class Provider {
     }
 
     public void run() throws TimeoutException, IOException {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(Constants.FACTORY_HOST);
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
+        Channel channel = this.createChannel();
+        this.declareExchange(channel);
+        this.declareQueues(channel);
+        this.bindQueues(channel);
 
-        channel.exchangeDeclare(Constants.EXCHANGE_GLOBAL_DIRECT, BuiltinExchangeType.DIRECT);
+        channel.basicQos(1);
+        System.out.printf("%s waiting for messages...\n", this.name);
 
+        this.basicConsume(channel);
+    }
+
+    private void declareQueues(Channel channel) throws IOException {
         channel.queueDeclare(Constants.QUEUE_NAME_PERSON, false, false, false, null);
         channel.queueDeclare(Constants.QUEUE_NAME_CARGO, false, false, false, null);
         channel.queueDeclare(Constants.QUEUE_NAME_SATELLITE, false, false, false, null);
         channel.queueDeclare(Constants.QUEUE_NAME_ACK, false, false, false, null);
 
-        System.out.println("Binding to direct: ");
-        System.out.println(capability1);
-        System.out.println(capability2);
+        this.adminQueue = channel.queueDeclare().getQueue();
+    }
 
-        this.bindQueue(channel, capability1);
-        this.bindQueue(channel, capability2);
+    private void bindQueues(Channel channel) throws IOException {
+        this.bindQueue(channel, this.capability1);
+        this.bindQueue(channel, this.capability2);
 
+        channel.queueBind(this.adminQueue, Constants.EXCHANGE_GLOBAL, Constants.TOPIC_KEY_ADMIN_PROVIDER);
+    }
+
+    private void basicConsume(Channel channel) throws IOException {
         String providerName = this.name;
-
         Consumer taskConsumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -57,30 +65,32 @@ public class Provider {
 
                 // Ack to agency
                 JobAck jobAck = new JobAck(providerName, job.capability, job.requestId);
-
-                System.out.printf("Sending ack to: %s\n", job.agencyName);
-
-                channel.basicPublish(Constants.EXCHANGE_GLOBAL_DIRECT, job.agencyName, null, jobAck.toString().getBytes());
+                channel.basicPublish(Constants.EXCHANGE_GLOBAL, job.agencyName, null, jobAck.toString().getBytes());
             }
         };
 
-        channel.basicQos(1);
-        System.out.printf("%s waiting for messages...\n", this.name);
+        Consumer adminConsumer = new DefaultConsumer(channel) {
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                String message = new String(body, StandardCharsets.UTF_8);
+                System.out.printf("Admin says: %s\n", message);
+                // RabbitMQ ack
+                channel.basicAck(envelope.getDeliveryTag(), false);
+            }
+        };
 
         this.basicConsume(channel, capability1, taskConsumer);
         this.basicConsume(channel, capability2, taskConsumer);
+        channel.basicConsume(this.adminQueue, false, adminConsumer);
     }
 
     private void bindQueue(Channel channel, String capability) throws IOException {
         if (capability.equals(Constants.TOPIC_KEY_PROVIDER_PERSON)) {
-            System.out.println("Binding to person queue");
-            channel.queueBind(Constants.QUEUE_NAME_PERSON, Constants.EXCHANGE_GLOBAL_DIRECT, capability);
+            channel.queueBind(Constants.QUEUE_NAME_PERSON, Constants.EXCHANGE_GLOBAL, capability);
         } else if (capability.equals(Constants.TOPIC_KEY_PROVIDER_CARGO)) {
-            System.out.println("Binding to cargo queue");
-            channel.queueBind(Constants.QUEUE_NAME_CARGO, Constants.EXCHANGE_GLOBAL_DIRECT, capability);
+            channel.queueBind(Constants.QUEUE_NAME_CARGO, Constants.EXCHANGE_GLOBAL, capability);
         } else if (capability.equals(Constants.TOPIC_KEY_PROVIDER_SATELLITE)) {
-            System.out.println("Binding to satelite queue");
-            channel.queueBind(Constants.QUEUE_NAME_SATELLITE, Constants.EXCHANGE_GLOBAL_DIRECT, capability);
+            channel.queueBind(Constants.QUEUE_NAME_SATELLITE, Constants.EXCHANGE_GLOBAL, capability);
         } else {
             throw new RuntimeException("How did you get here? No such capability");
         }
@@ -88,13 +98,10 @@ public class Provider {
 
     private void basicConsume(Channel channel, String capability, Consumer consumer) throws IOException {
         if (capability.equals(Constants.TOPIC_KEY_PROVIDER_PERSON)) {
-            System.out.println("Consume to person queue");
             channel.basicConsume(Constants.QUEUE_NAME_PERSON, false, consumer);
         } else if (capability.equals(Constants.TOPIC_KEY_PROVIDER_CARGO)) {
-            System.out.println("Consume to cargo queue");
             channel.basicConsume(Constants.QUEUE_NAME_CARGO, false, consumer);
         } else if (capability.equals(Constants.TOPIC_KEY_PROVIDER_SATELLITE)) {
-            System.out.println("Consume to satelite queue");
             channel.basicConsume(Constants.QUEUE_NAME_SATELLITE, false, consumer);
         } else {
             throw new RuntimeException("How did you get here? No such capability");
