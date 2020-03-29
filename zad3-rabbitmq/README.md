@@ -12,6 +12,11 @@ The admin and agency are self-explanatory.
 
 # Running
 
+Make sure you have rabbitMQ running, the easiest way to achieve that:
+```$xslt
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management  
+```
+
 Module `src.main` contains programs to run.
 
 ## Provider

@@ -12,7 +12,7 @@ public class Constants {
     public static String TOPIC_KEY_ADMIN_PROVIDER = "admin.provider";
     public static String TOPIC_KEY_ADMIN_AGENCY = "admin.agency";
 
-    public static String EXCHANGE_GLOBAL = "globalDirectExchange";
+    public static String EXCHANGE_GLOBAL = "globalExchange";
 
     public static String QUEUE_NAME_PERSON = "personQueue";
     public static String QUEUE_NAME_CARGO = "cargoQueue";
