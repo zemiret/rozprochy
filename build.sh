@@ -12,6 +12,9 @@ no=$2
 outname="Mleczko_Antoni_$no"
 
 cp -r $dir $outname
+
+rm -r $outname/.idea
+
 zip -r $outname.zip $outname
 
 rm -r $outname

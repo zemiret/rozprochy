@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "task.grpc.types";
+option java_outer_classname = "TypesProto";
+option go_package = ".;types";
+
+package types;
+
+service Notifier {
+  rpc Observe (ObserveRequest) returns (stream Event);
+}
+
+message ObserveRequest {
+  EventType type = 1;
+  EventSeverity severity = 2;
+  string kingdom = 3;
+}
+
+message Event {
+  EventType type = 1;
+  EventSeverity severity = 2;
+  string kingdom = 4;
+  repeated string affectedKingdoms = 5;
+  string description = 3;
+}
+
+enum EventType {
+  ARMY_DEFEATED = 0;
+  CITY_DESTROYED = 1;
+  KING_CHANGED = 2;
+}
+
+enum EventSeverity {
+  LOW = 0;
+  MEDIUM = 1;
+  HIGH = 2;
+  CRITICAL = 3;
+}
