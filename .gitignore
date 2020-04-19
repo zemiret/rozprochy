@@ -1,3 +1,5 @@
 **/__pycache__
 **/.idea/
 zad3-rabbitmq/out/
+zad4-middleware/1-grpc/client/out/
+zad4-middleware/1-grpc/out/
