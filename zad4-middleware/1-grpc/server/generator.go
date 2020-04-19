@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	pb "task/grpc/types"
+	pb "server/gen"
 )
 
 var (

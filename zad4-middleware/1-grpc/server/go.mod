@@ -1,4 +1,4 @@
-module task/grpc
+module server
 
 go 1.14
 

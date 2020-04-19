@@ -1,5 +1,7 @@
 package main
 
+// TODO: Niewywracalnosc
+
 import (
 	"errors"
 	"google.golang.org/grpc"
@@ -8,14 +10,13 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	pb "server/gen"
 	"sync"
-	pb "task/grpc/types"
 	"time"
 )
 
 const (
-	port     = ":20200"
-	protocol = "tcp"
+	port = ":20200"
 )
 
 var (
@@ -66,8 +67,8 @@ func main() {
 	rand.Seed(time.Now().Unix())
 	gen := NewGenerator(3)
 
-	lis, err := net.Listen(protocol, port)
-	log.Printf("Listening using %s on %s...", protocol, port)
+	lis, err := net.Listen("tcp", port)
+	log.Printf("Listening on %s...", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -82,6 +83,8 @@ func main() {
 			if err != nil {
 				log.Println("Error generating event: ", err)
 			}
+
+			// TODO: Some bug somewhere. When client closes connection, it stops generating events (probably channel)
 
 			log.Println("Generated event: ", ev.Description)
 

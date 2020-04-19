@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "task.grpc.types";
+option java_package = "grpc.types";
 option java_outer_classname = "TypesProto";
-option go_package = ".;types";
+option go_package = ".;gen";
 
 package types;
 
@@ -33,7 +33,5 @@ enum EventType {
 
 enum EventSeverity {
   LOW = 0;
-  MEDIUM = 1;
-  HIGH = 2;
-  CRITICAL = 3;
+  HIGH = 1;
 }
