@@ -1,6 +1,8 @@
-["java:package:server.src.main.java"]
+["java:package:types"]
 module Smarthouse {
 	enum State { Running, Off }
+
+	sequence<string> Lines;
 
 	struct OvenProgram {
 		float temperature;
@@ -13,8 +15,12 @@ module Smarthouse {
 		string reason;
 	}
 
+	interface DeviceCloud {
+		idempotent Lines listDevices();
+	}
+
 	interface Device {
-		idempotent string name();
+		idempotent string getName();
 		idempotent State getState();
 		void turnOn() throws GenericError;
 		void turnOff() throws GenericError;
@@ -25,7 +31,6 @@ module Smarthouse {
 		void setProgram(OvenProgram program) throws GenericError;
 	}
 
-	sequence<string> Lines;
 
 	interface Bulbulator extends Device {
 		idempotent Lines getJoke();

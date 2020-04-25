@@ -6,6 +6,6 @@ You need to have `slice` compiler installed
 
 Generating types:
 ```
-slice2java -I. types.ice
+rm -r server/src/types && slice2java -I. types.ice && mv types server/src
 ```
 
