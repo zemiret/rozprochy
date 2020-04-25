@@ -24,6 +24,11 @@ public final class TypesProto {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_types_Event_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_types_Empty_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_types_Empty_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -39,13 +44,14 @@ public final class TypesProto {
       "m\030\003 \001(\t\"\217\001\n\005Event\022\036\n\004type\030\001 \001(\0162\020.types." +
       "EventType\022&\n\010severity\030\002 \001(\0162\024.types.Even" +
       "tSeverity\022\017\n\007kingdom\030\004 \001(\t\022\030\n\020affectedKi" +
-      "ngdoms\030\005 \003(\t\022\023\n\013description\030\003 \001(\t*D\n\tEve" +
-      "ntType\022\021\n\rARMY_DEFEATED\020\000\022\022\n\016CITY_DESTRO" +
-      "YED\020\001\022\020\n\014KING_CHANGED\020\002*\"\n\rEventSeverity" +
-      "\022\007\n\003LOW\020\000\022\010\n\004HIGH\020\0012<\n\010Notifier\0220\n\007Obser" +
-      "ve\022\025.types.ObserveRequest\032\014.types.Event0" +
-      "\001B!\n\ngrpc.typesB\nTypesProtoP\001Z\005.;genb\006pr" +
-      "oto3"
+      "ngdoms\030\005 \003(\t\022\023\n\013description\030\003 \001(\t\"\007\n\005Emp" +
+      "ty*D\n\tEventType\022\021\n\rARMY_DEFEATED\020\000\022\022\n\016CI" +
+      "TY_DESTROYED\020\001\022\020\n\014KING_CHANGED\020\002*\"\n\rEven" +
+      "tSeverity\022\007\n\003LOW\020\000\022\010\n\004HIGH\020\0012`\n\010Notifier" +
+      "\0220\n\007Observe\022\025.types.ObserveRequest\032\014.typ" +
+      "es.Event0\001\022\"\n\004Ping\022\014.types.Empty\032\014.types" +
+      ".EmptyB!\n\ngrpc.typesB\nTypesProtoP\001Z\005.;ge" +
+      "nb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -63,6 +69,12 @@ public final class TypesProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_types_Event_descriptor,
         new java.lang.String[] { "Type", "Severity", "Kingdom", "AffectedKingdoms", "Description", });
+    internal_static_types_Empty_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_types_Empty_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_types_Empty_descriptor,
+        new java.lang.String[] { });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

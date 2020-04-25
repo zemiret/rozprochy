@@ -58,6 +58,37 @@ public final class NotifierGrpc {
     return getObserveMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<grpc.types.Empty,
+      grpc.types.Empty> getPingMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "Ping",
+      requestType = grpc.types.Empty.class,
+      responseType = grpc.types.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<grpc.types.Empty,
+      grpc.types.Empty> getPingMethod() {
+    io.grpc.MethodDescriptor<grpc.types.Empty, grpc.types.Empty> getPingMethod;
+    if ((getPingMethod = NotifierGrpc.getPingMethod) == null) {
+      synchronized (NotifierGrpc.class) {
+        if ((getPingMethod = NotifierGrpc.getPingMethod) == null) {
+          NotifierGrpc.getPingMethod = getPingMethod =
+              io.grpc.MethodDescriptor.<grpc.types.Empty, grpc.types.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Ping"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  grpc.types.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  grpc.types.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NotifierMethodDescriptorSupplier("Ping"))
+              .build();
+        }
+      }
+    }
+    return getPingMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -113,6 +144,13 @@ public final class NotifierGrpc {
       asyncUnimplementedUnaryCall(getObserveMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void ping(grpc.types.Empty request,
+        io.grpc.stub.StreamObserver<grpc.types.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getPingMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -122,6 +160,13 @@ public final class NotifierGrpc {
                 grpc.types.ObserveRequest,
                 grpc.types.Event>(
                   this, METHODID_OBSERVE)))
+          .addMethod(
+            getPingMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                grpc.types.Empty,
+                grpc.types.Empty>(
+                  this, METHODID_PING)))
           .build();
     }
   }
@@ -147,6 +192,14 @@ public final class NotifierGrpc {
       asyncServerStreamingCall(
           getChannel().newCall(getObserveMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void ping(grpc.types.Empty request,
+        io.grpc.stub.StreamObserver<grpc.types.Empty> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getPingMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -170,6 +223,13 @@ public final class NotifierGrpc {
       return blockingServerStreamingCall(
           getChannel(), getObserveMethod(), getCallOptions(), request);
     }
+
+    /**
+     */
+    public grpc.types.Empty ping(grpc.types.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getPingMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -185,9 +245,18 @@ public final class NotifierGrpc {
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NotifierFutureStub(channel, callOptions);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<grpc.types.Empty> ping(
+        grpc.types.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getPingMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_OBSERVE = 0;
+  private static final int METHODID_PING = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -209,6 +278,10 @@ public final class NotifierGrpc {
         case METHODID_OBSERVE:
           serviceImpl.observe((grpc.types.ObserveRequest) request,
               (io.grpc.stub.StreamObserver<grpc.types.Event>) responseObserver);
+          break;
+        case METHODID_PING:
+          serviceImpl.ping((grpc.types.Empty) request,
+              (io.grpc.stub.StreamObserver<grpc.types.Empty>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -272,6 +345,7 @@ public final class NotifierGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new NotifierFileDescriptorSupplier())
               .addMethod(getObserveMethod())
+              .addMethod(getPingMethod())
               .build();
         }
       }

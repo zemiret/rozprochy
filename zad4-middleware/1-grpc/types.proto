@@ -9,6 +9,7 @@ package types;
 
 service Notifier {
   rpc Observe (ObserveRequest) returns (stream Event);
+  rpc Ping(Empty) returns (Empty);
 }
 
 message ObserveRequest {
@@ -23,6 +24,9 @@ message Event {
   string kingdom = 4;
   repeated string affectedKingdoms = 5;
   string description = 3;
+}
+
+message Empty {
 }
 
 enum EventType {

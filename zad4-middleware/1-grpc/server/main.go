@@ -1,8 +1,7 @@
 package main
 
-// TODO: Niewywracalnosc
-
 import (
+	"context"
 	"errors"
 	"google.golang.org/grpc"
 	"log"
@@ -53,6 +52,18 @@ func (s *server) Observe(req *pb.ObserveRequest, stream pb.Notifier_ObserveServe
 		if more {
 			if shouldReport(req, ev) {
 				if err := stream.Send(ev); err != nil {
+					close(eventChannel)
+					observable.Lock()
+					var idx int
+					for i, v := range observable.ch {
+						if v == eventChannel {
+							idx = i
+							break
+						}
+					}
+					observable.ch = append(observable.ch[:idx], observable.ch[idx+1:]...)
+					observable.Unlock()
+
 					return err
 				}
 			}
@@ -61,6 +72,10 @@ func (s *server) Observe(req *pb.ObserveRequest, stream pb.Notifier_ObserveServe
 			return ErrChannelClosed
 		}
 	}
+}
+
+func (s *server) Ping(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
+	return &pb.Empty{}, nil
 }
 
 func main() {
@@ -83,8 +98,6 @@ func main() {
 			if err != nil {
 				log.Println("Error generating event: ", err)
 			}
-
-			// TODO: Some bug somewhere. When client closes connection, it stops generating events (probably channel)
 
 			log.Println("Generated event: ", ev.Description)
 
