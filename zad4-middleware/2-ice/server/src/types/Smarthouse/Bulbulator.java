@@ -17,7 +17,8 @@ package types.Smarthouse;
 
 public interface Bulbulator extends Device
 {
-    String[] getJoke(com.zeroc.Ice.Current current);
+    String[] getJoke(com.zeroc.Ice.Current current)
+        throws GenericError;
 
     /** @hidden */
     static final String[] _iceIds =
@@ -50,8 +51,10 @@ public interface Bulbulator extends Device
      * @param inS -
      * @param current -
      * @return -
+     * @throws com.zeroc.Ice.UserException -
     **/
     static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_getJoke(Bulbulator obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
+        throws com.zeroc.Ice.UserException
     {
         com.zeroc.Ice.Object._iceCheckMode(com.zeroc.Ice.OperationMode.Idempotent, current.mode);
         inS.readEmptyParams();

@@ -17,7 +17,8 @@ package types.Smarthouse;
 
 public interface Oven extends Device
 {
-    OvenProgram getProgram(com.zeroc.Ice.Current current);
+    OvenProgram getProgram(com.zeroc.Ice.Current current)
+        throws GenericError;
 
     void setProgram(OvenProgram program, com.zeroc.Ice.Current current)
         throws GenericError;
@@ -53,8 +54,10 @@ public interface Oven extends Device
      * @param inS -
      * @param current -
      * @return -
+     * @throws com.zeroc.Ice.UserException -
     **/
     static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_getProgram(Oven obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
+        throws com.zeroc.Ice.UserException
     {
         com.zeroc.Ice.Object._iceCheckMode(com.zeroc.Ice.OperationMode.Idempotent, current.mode);
         inS.readEmptyParams();

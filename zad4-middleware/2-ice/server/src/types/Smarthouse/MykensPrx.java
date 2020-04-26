@@ -18,13 +18,26 @@ package types.Smarthouse;
 public interface MykensPrx extends BulbulatorPrx
 {
     default void setSpeed(int speed)
+        throws GenericError
     {
         setSpeed(speed, com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
     default void setSpeed(int speed, java.util.Map<String, String> context)
+        throws GenericError
     {
-        _iceI_setSpeedAsync(speed, context, true).waitForResponse();
+        try
+        {
+            _iceI_setSpeedAsync(speed, context, true).waitForResponseOrUserEx();
+        }
+        catch(GenericError ex)
+        {
+            throw ex;
+        }
+        catch(com.zeroc.Ice.UserException ex)
+        {
+            throw new com.zeroc.Ice.UnknownUserException(ex.ice_id(), ex);
+        }
     }
 
     default java.util.concurrent.CompletableFuture<Void> setSpeedAsync(int speed)
@@ -46,21 +59,40 @@ public interface MykensPrx extends BulbulatorPrx
      **/
     default com.zeroc.IceInternal.OutgoingAsync<Void> _iceI_setSpeedAsync(int iceP_speed, java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<Void> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "setSpeed", null, sync, null);
-        f.invoke(false, context, null, ostr -> {
+        com.zeroc.IceInternal.OutgoingAsync<Void> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "setSpeed", null, sync, _iceE_setSpeed);
+        f.invoke(true, context, null, ostr -> {
                      ostr.writeInt(iceP_speed);
                  }, null);
         return f;
     }
 
+    /** @hidden */
+    static final Class<?>[] _iceE_setSpeed =
+    {
+        GenericError.class
+    };
+
     default String mykensuj()
+        throws GenericError
     {
         return mykensuj(com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
     default String mykensuj(java.util.Map<String, String> context)
+        throws GenericError
     {
-        return _iceI_mykensujAsync(context, true).waitForResponse();
+        try
+        {
+            return _iceI_mykensujAsync(context, true).waitForResponseOrUserEx();
+        }
+        catch(GenericError ex)
+        {
+            throw ex;
+        }
+        catch(com.zeroc.Ice.UserException ex)
+        {
+            throw new com.zeroc.Ice.UnknownUserException(ex.ice_id(), ex);
+        }
     }
 
     default java.util.concurrent.CompletableFuture<java.lang.String> mykensujAsync()
@@ -81,7 +113,7 @@ public interface MykensPrx extends BulbulatorPrx
      **/
     default com.zeroc.IceInternal.OutgoingAsync<java.lang.String> _iceI_mykensujAsync(java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<java.lang.String> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "mykensuj", com.zeroc.Ice.OperationMode.Idempotent, sync, null);
+        com.zeroc.IceInternal.OutgoingAsync<java.lang.String> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "mykensuj", com.zeroc.Ice.OperationMode.Idempotent, sync, _iceE_mykensuj);
         f.invoke(true, context, null, null, istr -> {
                      String ret;
                      ret = istr.readString();
@@ -89,6 +121,12 @@ public interface MykensPrx extends BulbulatorPrx
                  });
         return f;
     }
+
+    /** @hidden */
+    static final Class<?>[] _iceE_mykensuj =
+    {
+        GenericError.class
+    };
 
     /**
      * Contacts the remote server to verify that the object implements this type.

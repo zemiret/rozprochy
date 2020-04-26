@@ -6,4 +6,6 @@ zad4-middleware/1-grpc/client/out/
 zad4-middleware/1-grpc/out/
 zad4-middleware/2-ice/server/src/build/
 zad4-middleware/2-ice/server/build/
+zad4-middleware/2-ice/server/out/
+zad4-middleware/2-ice/client/.venv/
 

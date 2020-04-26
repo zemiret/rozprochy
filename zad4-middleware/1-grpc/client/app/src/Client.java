@@ -41,8 +41,12 @@ public class Client {
 
         @Override
         public void onError(Throwable t) {
-            watchdog.setServerDead();
-            watchdog.startRecovery();
+            Status status = Status.fromThrowable(t);
+
+            if (status.getCode().equals(Status.Code.UNAVAILABLE)) {
+                watchdog.setServerDead();
+                watchdog.startRecovery();
+            }
         }
 
         @Override

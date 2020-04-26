@@ -27,22 +27,22 @@ module Smarthouse {
 	}
 
 	interface Oven extends Device {
-		idempotent OvenProgram getProgram();
+		idempotent OvenProgram getProgram() throws GenericError;
 		void setProgram(OvenProgram program) throws GenericError;
 	}
 
 
 	interface Bulbulator extends Device {
-		idempotent Lines getJoke();
+		idempotent Lines getJoke() throws GenericError;
 	}
 
 	interface Wihajster extends Bulbulator {
-		void setTarget(string target);
-		idempotent string describeTarget();
+		void setTarget(string target) throws GenericError;
+		idempotent string describeTarget() throws GenericError;
 	}
 
 	interface Mykens extends Bulbulator {
-		void setSpeed(int speed);
-		idempotent string mykensuj();
+		void setSpeed(int speed) throws GenericError;
+		idempotent string mykensuj() throws GenericError;
 	}
 }

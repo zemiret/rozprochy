@@ -18,13 +18,26 @@ package types.Smarthouse;
 public interface BulbulatorPrx extends DevicePrx
 {
     default String[] getJoke()
+        throws GenericError
     {
         return getJoke(com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
     default String[] getJoke(java.util.Map<String, String> context)
+        throws GenericError
     {
-        return _iceI_getJokeAsync(context, true).waitForResponse();
+        try
+        {
+            return _iceI_getJokeAsync(context, true).waitForResponseOrUserEx();
+        }
+        catch(GenericError ex)
+        {
+            throw ex;
+        }
+        catch(com.zeroc.Ice.UserException ex)
+        {
+            throw new com.zeroc.Ice.UnknownUserException(ex.ice_id(), ex);
+        }
     }
 
     default java.util.concurrent.CompletableFuture<String[]> getJokeAsync()
@@ -45,7 +58,7 @@ public interface BulbulatorPrx extends DevicePrx
      **/
     default com.zeroc.IceInternal.OutgoingAsync<String[]> _iceI_getJokeAsync(java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<String[]> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "getJoke", com.zeroc.Ice.OperationMode.Idempotent, sync, null);
+        com.zeroc.IceInternal.OutgoingAsync<String[]> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "getJoke", com.zeroc.Ice.OperationMode.Idempotent, sync, _iceE_getJoke);
         f.invoke(true, context, null, null, istr -> {
                      String[] ret;
                      ret = istr.readStringSeq();
@@ -53,6 +66,12 @@ public interface BulbulatorPrx extends DevicePrx
                  });
         return f;
     }
+
+    /** @hidden */
+    static final Class<?>[] _iceE_getJoke =
+    {
+        GenericError.class
+    };
 
     /**
      * Contacts the remote server to verify that the object implements this type.

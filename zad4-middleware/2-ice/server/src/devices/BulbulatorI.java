@@ -2,6 +2,7 @@ package devices;
 
 import com.zeroc.Ice.Current;
 import types.Smarthouse.Bulbulator;
+import types.Smarthouse.GenericError;
 
 public class BulbulatorI extends DeviceI implements Bulbulator {
 
@@ -10,7 +11,10 @@ public class BulbulatorI extends DeviceI implements Bulbulator {
     }
 
     @Override
-    public String[] getJoke(Current current) {
+    public String[] getJoke(Current current) throws GenericError {
+        System.out.println("Get joke of: " + this.getName(null));
+        checkRunning();
+
         return new String[]{
                 "Co to jest ten bulbulator?",
                 "No coś w stylu wihajstra.",

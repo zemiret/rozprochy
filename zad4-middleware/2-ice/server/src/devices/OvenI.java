@@ -14,16 +14,16 @@ public class OvenI extends DeviceI implements Oven {
     }
 
     @Override
-    public OvenProgram getProgram(Current current) {
+    public OvenProgram getProgram(Current current) throws GenericError {
+        System.out.println("Get program of: " + this.getName(null));
+        checkRunning();
         return currentProgram;
     }
 
     @Override
     public void setProgram(OvenProgram program, Current current) throws GenericError {
-        if (this.getState(null) != State.Running) {
-            throw new GenericError("Oven must be turned on before setting program");
-        }
-
+        System.out.println("Set program of: " + this.getName(null));
+        checkRunning();
         this.currentProgram = program;
     }
 }

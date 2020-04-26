@@ -1,0 +1,2 @@
+PORT_NUM = 10000
+CLOUD_NAME = 'cloud'

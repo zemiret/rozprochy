@@ -11,6 +11,11 @@ import java.util.Map;
 
 public class DeviceCloudI implements DeviceCloud {
     private final Map<String, Device> devices = new HashMap<>();
+    private final String name;
+
+    public DeviceCloudI(String name) {
+        this.name = name;
+    }
 
     @Override
     public String[] listDevices(Current current) {
@@ -29,5 +34,9 @@ public class DeviceCloudI implements DeviceCloud {
 
     public Device getByName(String name) {
         return this.devices.get(name);
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

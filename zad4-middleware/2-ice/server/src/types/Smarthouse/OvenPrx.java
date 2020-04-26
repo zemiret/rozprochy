@@ -18,13 +18,26 @@ package types.Smarthouse;
 public interface OvenPrx extends DevicePrx
 {
     default OvenProgram getProgram()
+        throws GenericError
     {
         return getProgram(com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
     default OvenProgram getProgram(java.util.Map<String, String> context)
+        throws GenericError
     {
-        return _iceI_getProgramAsync(context, true).waitForResponse();
+        try
+        {
+            return _iceI_getProgramAsync(context, true).waitForResponseOrUserEx();
+        }
+        catch(GenericError ex)
+        {
+            throw ex;
+        }
+        catch(com.zeroc.Ice.UserException ex)
+        {
+            throw new com.zeroc.Ice.UnknownUserException(ex.ice_id(), ex);
+        }
     }
 
     default java.util.concurrent.CompletableFuture<OvenProgram> getProgramAsync()
@@ -45,7 +58,7 @@ public interface OvenPrx extends DevicePrx
      **/
     default com.zeroc.IceInternal.OutgoingAsync<OvenProgram> _iceI_getProgramAsync(java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<OvenProgram> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "getProgram", com.zeroc.Ice.OperationMode.Idempotent, sync, null);
+        com.zeroc.IceInternal.OutgoingAsync<OvenProgram> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "getProgram", com.zeroc.Ice.OperationMode.Idempotent, sync, _iceE_getProgram);
         f.invoke(true, context, null, null, istr -> {
                      OvenProgram ret;
                      ret = OvenProgram.ice_read(istr);
@@ -53,6 +66,12 @@ public interface OvenPrx extends DevicePrx
                  });
         return f;
     }
+
+    /** @hidden */
+    static final Class<?>[] _iceE_getProgram =
+    {
+        GenericError.class
+    };
 
     default void setProgram(OvenProgram program)
         throws GenericError

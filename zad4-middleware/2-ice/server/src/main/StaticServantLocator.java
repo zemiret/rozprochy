@@ -17,11 +17,16 @@ public class StaticServantLocator implements ServantLocator {
     public LocateResult locate(Current curr) throws UserException {
         String name = curr.id.name;
 
-        System.out.println("Instantiating servant for: " + name);
+        Log.info("Instantiating servant for: " + name);
+
+        if (name.equals(this.deviceCloud.getName())) {
+            return new ServantLocator.LocateResult(this.deviceCloud, null);
+        }
 
         Device device = deviceCloud.getByName(name);
 
         if (device == null) {
+            Log.warning("Device not found for: " + name);
             throw new ObjectNotFoundException();
         }
 

@@ -17,9 +17,11 @@ package types.Smarthouse;
 
 public interface Wihajster extends Bulbulator
 {
-    void setTarget(String target, com.zeroc.Ice.Current current);
+    void setTarget(String target, com.zeroc.Ice.Current current)
+        throws GenericError;
 
-    String describeTarget(com.zeroc.Ice.Current current);
+    String describeTarget(com.zeroc.Ice.Current current)
+        throws GenericError;
 
     /** @hidden */
     static final String[] _iceIds =
@@ -53,8 +55,10 @@ public interface Wihajster extends Bulbulator
      * @param inS -
      * @param current -
      * @return -
+     * @throws com.zeroc.Ice.UserException -
     **/
     static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_setTarget(Wihajster obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
+        throws com.zeroc.Ice.UserException
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         com.zeroc.Ice.InputStream istr = inS.startReadParams();
@@ -71,8 +75,10 @@ public interface Wihajster extends Bulbulator
      * @param inS -
      * @param current -
      * @return -
+     * @throws com.zeroc.Ice.UserException -
     **/
     static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_describeTarget(Wihajster obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
+        throws com.zeroc.Ice.UserException
     {
         com.zeroc.Ice.Object._iceCheckMode(com.zeroc.Ice.OperationMode.Idempotent, current.mode);
         inS.readEmptyParams();

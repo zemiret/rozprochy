@@ -18,13 +18,26 @@ package types.Smarthouse;
 public interface WihajsterPrx extends BulbulatorPrx
 {
     default void setTarget(String target)
+        throws GenericError
     {
         setTarget(target, com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
     default void setTarget(String target, java.util.Map<String, String> context)
+        throws GenericError
     {
-        _iceI_setTargetAsync(target, context, true).waitForResponse();
+        try
+        {
+            _iceI_setTargetAsync(target, context, true).waitForResponseOrUserEx();
+        }
+        catch(GenericError ex)
+        {
+            throw ex;
+        }
+        catch(com.zeroc.Ice.UserException ex)
+        {
+            throw new com.zeroc.Ice.UnknownUserException(ex.ice_id(), ex);
+        }
     }
 
     default java.util.concurrent.CompletableFuture<Void> setTargetAsync(String target)
@@ -46,21 +59,40 @@ public interface WihajsterPrx extends BulbulatorPrx
      **/
     default com.zeroc.IceInternal.OutgoingAsync<Void> _iceI_setTargetAsync(String iceP_target, java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<Void> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "setTarget", null, sync, null);
-        f.invoke(false, context, null, ostr -> {
+        com.zeroc.IceInternal.OutgoingAsync<Void> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "setTarget", null, sync, _iceE_setTarget);
+        f.invoke(true, context, null, ostr -> {
                      ostr.writeString(iceP_target);
                  }, null);
         return f;
     }
 
+    /** @hidden */
+    static final Class<?>[] _iceE_setTarget =
+    {
+        GenericError.class
+    };
+
     default String describeTarget()
+        throws GenericError
     {
         return describeTarget(com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
     default String describeTarget(java.util.Map<String, String> context)
+        throws GenericError
     {
-        return _iceI_describeTargetAsync(context, true).waitForResponse();
+        try
+        {
+            return _iceI_describeTargetAsync(context, true).waitForResponseOrUserEx();
+        }
+        catch(GenericError ex)
+        {
+            throw ex;
+        }
+        catch(com.zeroc.Ice.UserException ex)
+        {
+            throw new com.zeroc.Ice.UnknownUserException(ex.ice_id(), ex);
+        }
     }
 
     default java.util.concurrent.CompletableFuture<java.lang.String> describeTargetAsync()
@@ -81,7 +113,7 @@ public interface WihajsterPrx extends BulbulatorPrx
      **/
     default com.zeroc.IceInternal.OutgoingAsync<java.lang.String> _iceI_describeTargetAsync(java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<java.lang.String> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "describeTarget", com.zeroc.Ice.OperationMode.Idempotent, sync, null);
+        com.zeroc.IceInternal.OutgoingAsync<java.lang.String> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "describeTarget", com.zeroc.Ice.OperationMode.Idempotent, sync, _iceE_describeTarget);
         f.invoke(true, context, null, null, istr -> {
                      String ret;
                      ret = istr.readString();
@@ -89,6 +121,12 @@ public interface WihajsterPrx extends BulbulatorPrx
                  });
         return f;
     }
+
+    /** @hidden */
+    static final Class<?>[] _iceE_describeTarget =
+    {
+        GenericError.class
+    };
 
     /**
      * Contacts the remote server to verify that the object implements this type.

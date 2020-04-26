@@ -11,6 +11,7 @@ public abstract class DeviceI implements Device {
 
     public DeviceI(String name) {
         this.name = name;
+        this.state = State.Running;
     }
 
     @Override
@@ -20,16 +21,25 @@ public abstract class DeviceI implements Device {
 
     @Override
     public State getState(Current current) {
-        return state;
+        System.out.println("Get state of: " + this.getName(null));
+        return this.state;
     }
 
     @Override
-    public void turnOn(Current current) throws GenericError {
+    public void turnOn(Current current) {
+        System.out.println("Turning on: " + this.getName(null));
         this.state = State.Running;
     }
 
     @Override
-    public void turnOff(Current current) throws GenericError {
+    public void turnOff(Current current) {
+        System.out.println("Turning off: " + this.getName(null));
         this.state = State.Off;
+    }
+
+    protected void checkRunning() throws GenericError {
+        if (this.getState(null) != State.Running) {
+            throw new GenericError("Device must be turned on before the operation");
+        }
     }
 }
