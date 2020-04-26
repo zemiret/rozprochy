@@ -276,8 +276,8 @@ if 'DevicePrx' not in _M_Smarthouse.__dict__:
 
     Device._op_getName = IcePy.Operation('getName', Ice.OperationMode.Idempotent, Ice.OperationMode.Idempotent, False, None, (), (), (), ((), IcePy._t_string, False, 0), ())
     Device._op_getState = IcePy.Operation('getState', Ice.OperationMode.Idempotent, Ice.OperationMode.Idempotent, False, None, (), (), (), ((), _M_Smarthouse._t_State, False, 0), ())
-    Device._op_turnOn = IcePy.Operation('turnOn', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), None, (_M_Smarthouse._t_GenericError,))
-    Device._op_turnOff = IcePy.Operation('turnOff', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), None, (_M_Smarthouse._t_GenericError,))
+    Device._op_turnOn = IcePy.Operation('turnOn', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), None, ())
+    Device._op_turnOff = IcePy.Operation('turnOff', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), None, ())
 
     _M_Smarthouse.Device = Device
     del Device

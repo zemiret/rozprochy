@@ -22,8 +22,8 @@ module Smarthouse {
 	interface Device {
 		idempotent string getName();
 		idempotent State getState();
-		void turnOn() throws GenericError;
-		void turnOff() throws GenericError;
+		void turnOn();
+		void turnOff();
 	}
 
 	interface Oven extends Device {

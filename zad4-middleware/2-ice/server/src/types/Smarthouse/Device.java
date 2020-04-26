@@ -21,11 +21,9 @@ public interface Device extends com.zeroc.Ice.Object
 
     State getState(com.zeroc.Ice.Current current);
 
-    void turnOn(com.zeroc.Ice.Current current)
-        throws GenericError;
+    void turnOn(com.zeroc.Ice.Current current);
 
-    void turnOff(com.zeroc.Ice.Current current)
-        throws GenericError;
+    void turnOff(com.zeroc.Ice.Current current);
 
     /** @hidden */
     static final String[] _iceIds =
@@ -93,10 +91,8 @@ public interface Device extends com.zeroc.Ice.Object
      * @param inS -
      * @param current -
      * @return -
-     * @throws com.zeroc.Ice.UserException -
     **/
     static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_turnOn(Device obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
-        throws com.zeroc.Ice.UserException
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         inS.readEmptyParams();
@@ -110,10 +106,8 @@ public interface Device extends com.zeroc.Ice.Object
      * @param inS -
      * @param current -
      * @return -
-     * @throws com.zeroc.Ice.UserException -
     **/
     static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_turnOff(Device obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
-        throws com.zeroc.Ice.UserException
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         inS.readEmptyParams();
