@@ -8,4 +8,8 @@ zad4-middleware/2-ice/server/src/build/
 zad4-middleware/2-ice/server/build/
 zad4-middleware/2-ice/server/out/
 zad4-middleware/2-ice/client/.venv/
+zad6-zookeeper/out/
+zad6-zookeeper/logfile.hello
+zad6-zookeeper/logs/
+zad6-zookeeper/zookeeper-bin/logs/
 
