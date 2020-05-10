@@ -5,10 +5,10 @@ To set up the servers:
 docker-compose up
 ```
 
-To start (2) clients:
+To start clients use zookeper cli:
 ```
-cd zookeeper-bin/bin && ./zkCli.sh -server localhost:2181
-cd zookeeper-bin/bin && ./zkCli.sh -server localhost:2182
+zkCli.sh -server localhost:2181
+zkCli.sh -server localhost:2182
 ```
 
 To run this watcher, the easiest way is to use IntellIJ, and
