@@ -4,12 +4,11 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ZWatcher implements AsyncCallback.StatCallback, AsyncCallback.Children2Callback {
     private final ZooKeeper zk;
-    private List<String> lastRes = new LinkedList<>();
+    private int lastSum = -1;
     private final String watchFilename;
     private final String[] executable;
     private Process process = null;
@@ -22,7 +21,7 @@ public class ZWatcher implements AsyncCallback.StatCallback, AsyncCallback.Child
 
     public void startWatch() {
         zk.exists(watchFilename, true, this, null);
-        zk.getChildren(watchFilename, true, this, null);
+        this.subscribeChildrenAndGetCount(watchFilename);
     }
 
     @Override
@@ -58,14 +57,30 @@ public class ZWatcher implements AsyncCallback.StatCallback, AsyncCallback.Child
 
     @Override
     public void processResult(int rc, String path, Object ctx, List<String> list, Stat stat) {
-        if (!list.equals(lastRes) ) {
-            lastRes = list;
+        int sum = this.subscribeChildrenAndGetCount(watchFilename);
+        if (sum != lastSum) {
+            lastSum = sum;
             if (rc == KeeperException.Code.OK.intValue()) {
-                System.out.println("changed child of z node, now there are: " + list.size() + " children");
+                System.out.println("changed child of z node, now there are: " + (sum - 1) + " children");
             }
         }
+    }
 
-        // resubscribe
-        zk.getChildren(watchFilename, true, this, null);
+    private int subscribeChildrenAndGetCount(String name)  {
+        zk.getChildren(name, true, this, null);
+        int sum = 1;
+
+        try {
+            List<String> children = zk.getChildren(name, false);
+
+            for (String child : children) {
+                sum += subscribeChildrenAndGetCount(name + "/" + child);
+            }
+        } catch(KeeperException.NoNodeException e) {
+            // ...it's ok
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return sum;
     }
 }
