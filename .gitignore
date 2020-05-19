@@ -13,4 +13,5 @@ zad6-zookeeper/logfile.hello
 zad6-zookeeper/logs/
 zad6-zookeeper/zookeeper-bin/logs/
 zad6_akka/out/
+zad6_akka/test.db
 
