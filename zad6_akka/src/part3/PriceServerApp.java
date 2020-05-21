@@ -11,31 +11,20 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.*;
-import akka.http.javadsl.server.directives.FutureDirectives;
 import akka.pattern.Patterns;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Flow;
-import akka.util.Timeout;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import part3.messaging.PriceRequest;
 import part3.messaging.PriceResponse;
-import scala.concurrent.ExecutionContext;
-import scala.concurrent.Future;
-
-import static akka.http.javadsl.server.Directives.onSuccess;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class PriceServerApp extends AllDirectives {
     public static void main(String[] args) throws Exception {
